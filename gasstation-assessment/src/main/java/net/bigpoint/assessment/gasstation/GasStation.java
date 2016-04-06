@@ -2,7 +2,6 @@ package net.bigpoint.assessment.gasstation;
 
 import java.util.Collection;
 
-import net.bigpoint.assessment.gasstation.exceptions.GasNotAvailableException;
 import net.bigpoint.assessment.gasstation.exceptions.GasTooExpensiveException;
 import net.bigpoint.assessment.gasstation.exceptions.NotEnoughGasException;
 
@@ -47,10 +46,9 @@ public interface GasStation {
 	 *             by any single {@link GasPump}.
 	 * @throws GasTooExpensiveException
 	 *             Should be thrown if gas is not sold at the requested price (or any lower price)
-	 * @throws GasNotAvailableException
-	 * 			Should be thrown if a specific gas is not available at the station
+	 * 
 	 */			
-	double buyGas(GasType type, double amountInLiters, double maxPricePerLiter) throws NotEnoughGasException, GasTooExpensiveException,GasNotAvailableException;
+	double buyGas(GasType type, double amountInLiters, double maxPricePerLiter) throws NotEnoughGasException, GasTooExpensiveException;
 
 	/**
 	 * @return the total revenue generated

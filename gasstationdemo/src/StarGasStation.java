@@ -4,7 +4,6 @@ import java.util.Collection;
 import net.bigpoint.assessment.gasstation.GasPump;
 import net.bigpoint.assessment.gasstation.GasStation;
 import net.bigpoint.assessment.gasstation.GasType;
-import net.bigpoint.assessment.gasstation.exceptions.GasNotAvailableException;
 import net.bigpoint.assessment.gasstation.exceptions.GasTooExpensiveException;
 import net.bigpoint.assessment.gasstation.exceptions.NotEnoughGasException;
 
@@ -48,11 +47,12 @@ public class StarGasStation extends Thread implements GasStation
     }
 
     @Override
-    public synchronized double buyGas( final GasType type, final double amountInLiters, final double maxPricePerLiter ) throws NotEnoughGasException, GasTooExpensiveException, GasNotAvailableException
+    public synchronized double buyGas( final GasType type, final double amountInLiters, final double maxPricePerLiter ) throws NotEnoughGasException, GasTooExpensiveException
        
     {
         double amount = 0;
         
+
         for ( final GasPump gasPump : getGasPumps() )
         {	//check the gas type
             final boolean isRequestedGasType = gasPump.getGasType().equals(type);
@@ -87,10 +87,7 @@ public class StarGasStation extends Thread implements GasStation
                     throw new GasTooExpensiveException();
                 }
             }
-            else
-            {	//if the requested gas in not available at this station
-            	 throw new GasNotAvailableException();
-            }
+            
         }
 
         return amount;
@@ -175,14 +172,12 @@ public class StarGasStation extends Thread implements GasStation
     		
     		
     		} catch (NotEnoughGasException e) {
-    			System.out.println("Not enough gas! please try another station!");
+    			System.out.println("Not enough " + gasRequest.getType() + " gas! please try another station!");
     			System.out.println();
     		} catch (GasTooExpensiveException e) {
     			System.out.println(gasRequest.getType() +  " gas is too expensive! please try another station! ");
     			System.out.println();
-    		} catch (GasNotAvailableException e) {
-    			System.out.println(gasRequest.getType() +  " is not available! please try another station! ");
-			}
+    		} 
     	}
     	
     	//print me the results at the end of the day for each gas station

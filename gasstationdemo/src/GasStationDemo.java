@@ -43,10 +43,9 @@ public class GasStationDemo
         plutoGasStation.addGasRequest(new GasRequest(GasType.SUPER, 600, 1.50));
         plutoGasStation.addGasRequest(new GasRequest(GasType.DIESEL, 10000, 1.25));
         plutoGasStation.addGasRequest(new GasRequest(GasType.DIESEL, 2500, 0.90));
-        plutoGasStation.addGasRequest(new GasRequest(GasType.REGULAR, 100, 2.10));
  
         //thread start
-        marsGasStation.start();
+//        marsGasStation.start();
         plutoGasStation.start();
 
     }
