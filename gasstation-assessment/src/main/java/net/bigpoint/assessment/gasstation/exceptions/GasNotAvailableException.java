@@ -1,5 +1,11 @@
 package net.bigpoint.assessment.gasstation.exceptions;
 
+/**
+ * @author TTkocz
+ * This exception is thrown whenever a specific gas is not available at the station
+ * 
+ */
+
 public class GasNotAvailableException extends Exception{
 
 	/**

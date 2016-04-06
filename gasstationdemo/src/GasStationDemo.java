@@ -6,6 +6,7 @@ import net.bigpoint.assessment.gasstation.exceptions.NotEnoughGasException;
 
 /**
  * @author TTkocz
+ * Starter class for the gas station demo
  *
  */
 public class GasStationDemo
@@ -30,7 +31,6 @@ public class GasStationDemo
         marsGasStation.addGasRequest(new GasRequest(GasType.REGULAR, 2500, 1.77));
         marsGasStation.addGasRequest(new GasRequest(GasType.SUPER, 2500, 0.67));
         marsGasStation.addGasRequest(new GasRequest(GasType.SUPER, 2500, 1.67));
-        
         marsGasStation.addGasRequest(new GasRequest(GasType.REGULAR, 1500, 1.77));
 
         

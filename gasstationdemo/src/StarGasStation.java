@@ -11,6 +11,7 @@ import net.bigpoint.assessment.gasstation.exceptions.NotEnoughGasException;
 
 /**
  * @author TTkocz
+ * implementation of the GasStation interface
  *
  */
 public class StarGasStation extends Thread implements GasStation
