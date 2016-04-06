@@ -168,9 +168,9 @@ public class StarGasStation extends Thread implements GasStation
     		try {
     		
     			//process all customer requests
-    			System.out.println("Starting to pump " + gasRequest.amountInLiters + "L of " + gasRequest.type + " at "+ stationName);
-    			double amountGas = buyGas(gasRequest.type, gasRequest.amountInLiters, gasRequest.maxPricePerLiter);
-    			System.out.println(gasRequest.type + " request finished, bought "+ amountGas + "L at " + stationName);
+    			System.out.println("Starting to pump " + gasRequest.getAmountInLiters() + "L of " + gasRequest.getType() + " at "+ stationName);
+    			double amountGas = buyGas(gasRequest.getType(), gasRequest.getAmountInLiters(), gasRequest.getMaxPricePerLiter());
+    			System.out.println(gasRequest.getType() + " request finished, bought "+ amountGas + "L at " + stationName);
     			System.out.println();
     		
     		
@@ -178,10 +178,10 @@ public class StarGasStation extends Thread implements GasStation
     			System.out.println("Not enough gas! please try another station!");
     			System.out.println();
     		} catch (GasTooExpensiveException e) {
-    			System.out.println(gasRequest.type +  " gas is too expensive! please try another station! ");
+    			System.out.println(gasRequest.getType() +  " gas is too expensive! please try another station! ");
     			System.out.println();
     		} catch (GasNotAvailableException e) {
-    			System.out.println(gasRequest.type +  " is not available! please try another station! ");
+    			System.out.println(gasRequest.getType() +  " is not available! please try another station! ");
 			}
     	}
     	
