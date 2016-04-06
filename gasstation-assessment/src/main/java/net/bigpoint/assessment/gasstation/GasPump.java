@@ -28,7 +28,7 @@ public final class GasPump {
 
 		// simulate that it takes time to pump some gas
 		try {
-			Thread.sleep((long) (amount * 1));
+			Thread.sleep((long) (amount * 100));
 		} catch (InterruptedException e) {
 			// ignored
 		}
