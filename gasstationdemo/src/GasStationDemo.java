@@ -33,20 +33,24 @@ public class GasStationDemo
         marsGasStation.addGasRequest(new GasRequest(GasType.SUPER, 2500, 1.67));
         marsGasStation.addGasRequest(new GasRequest(GasType.REGULAR, 1500, 1.77));
 
-        
+        //Second Station Optional
         //Pluto gas station adding gas pumps
-        plutoGasStation.addGasPump(new GasPump(GasType.SUPER, 3000, 1.25));
-        plutoGasStation.addGasPump(new GasPump(GasType.DIESEL, 5000, 0.77));
-        
+//        plutoGasStation.addGasPump(new GasPump(GasType.SUPER, 3000, 1.25));
+//        plutoGasStation.addGasPump(new GasPump(GasType.DIESEL, 5000, 0.77));
+//        
         //adding customer gas requests
-        plutoGasStation.addGasRequest(new GasRequest(GasType.SUPER, 200, 1.70));
-        plutoGasStation.addGasRequest(new GasRequest(GasType.SUPER, 600, 1.50));
-        plutoGasStation.addGasRequest(new GasRequest(GasType.DIESEL, 10000, 1.25));
-        plutoGasStation.addGasRequest(new GasRequest(GasType.DIESEL, 2500, 0.90));
+//        plutoGasStation.addGasRequest(new GasRequest(GasType.SUPER, 200, 1.70));
+//        plutoGasStation.addGasRequest(new GasRequest(GasType.SUPER, 600, 1.50));
+//        plutoGasStation.addGasRequest(new GasRequest(GasType.DIESEL, 10000, 1.25));
+//        plutoGasStation.addGasRequest(new GasRequest(GasType.DIESEL, 2500, 0.90));
  
         //thread start
-        marsGasStation.start();
-        plutoGasStation.start();
+        marsGasStation.processRequestList();
+        marsGasStation.getGasPumpsAmount();
+        
+        //Optional
+//        plutoGasStation.processRequestList();
+//        plutoGasStation.getGasPumpsAmount();
 
     }
 

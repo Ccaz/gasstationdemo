@@ -22,6 +22,7 @@ public class StarGasStation extends Thread implements GasStation
     int numberNoGas;
     int numberGasTooExpensive;
     String stationName;
+	private Thread requestThread;
 
     public StarGasStation(String stationName)
     {
@@ -41,7 +42,7 @@ public class StarGasStation extends Thread implements GasStation
     }
 
     @Override
-    public Collection<GasPump> getGasPumps()
+    public synchronized Collection<GasPump> getGasPumps()
     {
         return gasPumpsList;
     }
@@ -158,36 +159,64 @@ public class StarGasStation extends Thread implements GasStation
     }
     
     
-    @Override
-    public void run() {
-    	for (GasRequest gasRequest : gasRequestList) 
-    	{
-    		try {
-    		
-    			//process all customer requests
-    			System.out.println("Starting to pump " + gasRequest.getAmountInLiters() + "L of " + gasRequest.getType() + " at "+ stationName);
-    			double amountGas = buyGas(gasRequest.getType(), gasRequest.getAmountInLiters(), gasRequest.getMaxPricePerLiter());
-    			System.out.println(gasRequest.getType() + " request finished, bought "+ amountGas + "L at " + stationName);
-    			System.out.println();
-    		
-    		
-    		} catch (NotEnoughGasException e) {
-    			System.out.println("Not enough " + gasRequest.getType() + " gas! please try another station!");
-    			System.out.println();
-    		} catch (GasTooExpensiveException e) {
-    			System.out.println(gasRequest.getType() +  " gas is too expensive! please try another station! ");
-    			System.out.println();
-    		} 
-    	}
-    	
-    	//print me the results at the end of the day for each gas station
-    	System.out.println();
-    	System.out.println(this.stationName + ":");
-    	System.out.println("NumberOfCancellationsNoGas " + getNumberOfCancellationsNoGas());
-    	System.out.println("NumberOfCancellationsTooExpensive " + getNumberOfCancellationsTooExpensive());
-    	System.out.println("NumberOfSales " + getNumberOfSales());
-    	System.out.println("Revenue " + getRevenue());
-    	
+
+    
+    public void processRequestList(){
+        requestThread = new Thread(new Runnable() {           
+            public void run() { 
+                //do stuff here
+            	for (GasRequest gasRequest : gasRequestList) 
+            	{
+            		try {
+            		
+            			//process all customer requests
+            			System.out.println("Starting to pump " + gasRequest.getAmountInLiters() + "L of " + gasRequest.getType() + " at "+ stationName);
+            			double amountGas = buyGas(gasRequest.getType(), gasRequest.getAmountInLiters(), gasRequest.getMaxPricePerLiter());
+            			System.out.println(gasRequest.getType() + " request finished, bought "+ amountGas + "L at " + stationName);
+            			System.out.println();
+            		
+            		
+            		} catch (NotEnoughGasException e) {
+            			System.out.println("Not enough " + gasRequest.getType() + " gas! please try another station!");
+            			System.out.println();
+            		} catch (GasTooExpensiveException e) {
+            			System.out.println(gasRequest.getType() +  " gas is too expensive! please try another station! ");
+            			System.out.println();
+            		} 
+            	}
+            	
+            	//print me the results at the end of the day for each gas station
+            	System.out.println();
+            	System.out.println(stationName + ":");
+            	System.out.println("NumberOfCancellationsNoGas " + getNumberOfCancellationsNoGas());
+            	System.out.println("NumberOfCancellationsTooExpensive " + getNumberOfCancellationsTooExpensive());
+            	System.out.println("NumberOfSales " + getNumberOfSales());
+            	System.out.println("Revenue " + getRevenue());
+            } 
+        });
+        requestThread.start();
+    }
+    
+    
+    //show me the remaining amount of gas of the gas pumps
+    public void getGasPumpsAmount(){
+        Thread amountThread = new Thread(new Runnable() {           
+            public void run() { 
+            	while(requestThread.isAlive())
+            	{
+            		for (GasPump gasPump : getGasPumps())
+            			{
+            				System.out.println("Remaining Amount of "+ gasPump.getGasType() + " " + gasPump.getRemainingAmount());
+            			}
+            		try {
+						Thread.sleep(2000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+            	}
+            } 
+        });
+        amountThread.start();
     }
     
     
