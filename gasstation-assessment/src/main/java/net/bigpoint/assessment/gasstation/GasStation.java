@@ -46,8 +46,7 @@ public interface GasStation {
 	 *             by any single {@link GasPump}.
 	 * @throws GasTooExpensiveException
 	 *             Should be thrown if gas is not sold at the requested price (or any lower price)
-	 * 
-	 */			
+	 */
 	double buyGas(GasType type, double amountInLiters, double maxPricePerLiter) throws NotEnoughGasException, GasTooExpensiveException;
 
 	/**

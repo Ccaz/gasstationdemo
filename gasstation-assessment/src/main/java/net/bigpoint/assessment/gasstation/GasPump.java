@@ -13,13 +13,12 @@ package net.bigpoint.assessment.gasstation;
 public final class GasPump {
 
 	private final GasType gasType;
-	private double price;
+
 	private double amount;
 
-	public GasPump(GasType gasType, double amount, double price) {
+	public GasPump(GasType gasType, double amount) {
 		super();
 		this.gasType = gasType;
-		this.price = price;
 		this.amount = amount;
 	}
 
@@ -28,7 +27,7 @@ public final class GasPump {
 
 		// simulate that it takes time to pump some gas
 		try {
-			Thread.sleep((long) (amount * 10));
+			Thread.sleep((long) (amount * 100));
 		} catch (InterruptedException e) {
 			// ignored
 		}
@@ -40,14 +39,6 @@ public final class GasPump {
 
 	public GasType getGasType() {
 		return gasType;
-	}
-
-	public void setGasPrice(double price) {
-		this.price = price;
-	}
-
-	public double getGasPrice() {
-		return this.price;
 	}
 
 }

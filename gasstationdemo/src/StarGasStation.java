@@ -13,10 +13,11 @@ import net.bigpoint.assessment.gasstation.exceptions.NotEnoughGasException;
  * implementation of the GasStation interface
  *
  */
-public class StarGasStation extends Thread implements GasStation
+public class StarGasStation implements GasStation
 {
     Collection<GasPump> gasPumpsList;
     Collection<GasRequest> gasRequestList;
+    Collection<GasPrice> gasPriceList;
     double stationRevenue;
     int numberOfSales;
     int numberNoGas;
@@ -33,9 +34,18 @@ public class StarGasStation extends Thread implements GasStation
         this.stationRevenue = 0;
         this.numberOfSales = 0;
         this.numberNoGas = 0;
+        initGasPrice();
     }
 
-    @Override
+    private void initGasPrice() {
+    	this.gasPriceList = new ArrayList<GasPrice>();
+    	for (GasType type : GasType.values()) {
+			gasPriceList.add(new GasPrice(type, 1.21));
+		}
+	}
+    
+
+	@Override
     public void addGasPump( final GasPump pump )
     {
         this.gasPumpsList.add(pump);
@@ -48,11 +58,10 @@ public class StarGasStation extends Thread implements GasStation
     }
 
     @Override
-    public synchronized double buyGas( final GasType type, final double amountInLiters, final double maxPricePerLiter ) throws NotEnoughGasException, GasTooExpensiveException
+    public double buyGas( final GasType type, final double amountInLiters, final double maxPricePerLiter ) throws NotEnoughGasException, GasTooExpensiveException
        
     {
         double amount = 0;
-        
 
         for ( final GasPump gasPump : getGasPumps() )
         {	//check the gas type
@@ -60,7 +69,7 @@ public class StarGasStation extends Thread implements GasStation
             if ( isRequestedGasType )
             {
             	//check if the gas price is right
-                final double gasPrice = gasPump.getGasPrice();
+                final double gasPrice = getPrice(type);
                 if ( gasPrice < maxPricePerLiter )
                 {	
                 	//check if the requested amount is available
@@ -70,7 +79,7 @@ public class StarGasStation extends Thread implements GasStation
                     	//if everything is correct, start to pump gas, return the amount, add the revenue and number of sales
                         gasPump.pumpGas(amountInLiters);
                         amount = amountInLiters;
-                        this.stationRevenue += (gasPump.getGasPrice() * amountInLiters);
+                        this.stationRevenue += (gasPrice * amountInLiters);
                         this.numberOfSales++;
                         
                     }
@@ -122,29 +131,31 @@ public class StarGasStation extends Thread implements GasStation
     public double getPrice( final GasType type )
     {
         double price = 0;
-
-        for ( final GasPump gasPump : getGasPumps() )
-        {
-            final boolean isRequestedGasType = gasPump.getGasType().equals(type);
-            if ( isRequestedGasType )
-            {
-                price = gasPump.getGasPrice();
-            }
-        }
+        
+        for (GasPrice gasPrice : gasPriceList) {
+			boolean isType = gasPrice.getType().equals(type);
+			if(isType)
+			{
+				return gasPrice.getPrice();
+			}
+		}
+        
         return price;
+        
     }
 
     @Override
     public void setPrice( final GasType type, final double price )
     {
-        for ( final GasPump gasPump : getGasPumps() )
-        {
-            final boolean isRequestedGasType = gasPump.getGasType().equals(type);
-            if ( isRequestedGasType )
-            {
-                gasPump.setGasPrice(price);
-            }
-        }
+        
+        for (GasPrice gasPrice : gasPriceList) {
+        	boolean isType = gasPrice.getType().equals(type);
+        	if(isType)
+        	{
+        		gasPrice.setPrice(price);
+        	}
+		}
+        
     }
     
     public void addGasRequest( final GasRequest request )
@@ -158,65 +169,55 @@ public class StarGasStation extends Thread implements GasStation
     	return this.gasRequestList;
     }
     
-    
-
-    
-    public void processRequestList(){
-        requestThread = new Thread(new Runnable() {           
-            public void run() { 
-                //do stuff here
-            	for (GasRequest gasRequest : gasRequestList) 
-            	{
-            		try {
-            		
-            			//process all customer requests
-            			System.out.println("Starting to pump " + gasRequest.getAmountInLiters() + "L of " + gasRequest.getType() + " at "+ stationName);
-            			double amountGas = buyGas(gasRequest.getType(), gasRequest.getAmountInLiters(), gasRequest.getMaxPricePerLiter());
-            			System.out.println(gasRequest.getType() + " request finished, bought "+ amountGas + "L at " + stationName);
-            			System.out.println();
-            		
-            		
-            		} catch (NotEnoughGasException e) {
-            			System.out.println("Not enough " + gasRequest.getType() + " gas! please try another station!");
-            			System.out.println();
-            		} catch (GasTooExpensiveException e) {
-            			System.out.println(gasRequest.getType() +  " gas is too expensive! please try another station! ");
-            			System.out.println();
-            		} 
-            	}
-            	
-            	//print me the results at the end of the day for each gas station
-            	System.out.println();
-            	System.out.println(stationName + ":");
-            	System.out.println("NumberOfCancellationsNoGas " + getNumberOfCancellationsNoGas());
-            	System.out.println("NumberOfCancellationsTooExpensive " + getNumberOfCancellationsTooExpensive());
-            	System.out.println("NumberOfSales " + getNumberOfSales());
-            	System.out.println("Revenue " + getRevenue());
-            } 
-        });
-        requestThread.start();
+    public void startGasPumps(){
+    	
+    	for (GasPump gasPump : gasPumpsList) {
+    		GasType gasType = gasPump.getGasType();
+    		PumpThread pumpThread = new PumpThread(stationName, gasType);
+    		pumpThread.start();
+		}
     }
     
     
-    //show me the remaining amount of gas of the gas pumps
-    public void getGasPumpsAmount(){
-        Thread amountThread = new Thread(new Runnable() {           
-            public void run() { 
-            	while(requestThread.isAlive())
-            	{
-            		for (GasPump gasPump : getGasPumps())
-            			{
-            				System.out.println("Remaining Amount of "+ gasPump.getGasType() + " " + gasPump.getRemainingAmount());
-            			}
-            		try {
-						Thread.sleep(2000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-            	}
-            } 
-        });
-        amountThread.start();
+    class PumpThread extends Thread
+    {
+    	GasType type;
+    	PumpThread (String name, GasType type)
+    	   {
+    	      super (name); 
+    	      this.type = type;
+    	   }
+    	   public void run ()
+    	   {
+    		   
+    	      System.out.println ("Gas Type: " + getType());
+    	      
+    	      for (GasRequest gasRequest : gasRequestList) {
+				
+    	    	  GasType gasRequestType = gasRequest.getType();
+    	    	  if(gasRequestType == this.type)
+    	    	  {
+    	    		  try {
+    	    			  System.out.println("Starting to pump " + gasRequest.getAmountInLiters() + "L of " + gasRequest.getType() + " at "+ stationName);
+						double amountGas = buyGas(gasRequest.getType(), gasRequest.getAmountInLiters(), gasRequest.getMaxPricePerLiter());
+						System.out.println(gasRequest.getType() + " request finished, bought "+ amountGas + "L at " + stationName);
+    	    		  } catch (NotEnoughGasException e) {
+              			System.out.println("Not enough " + gasRequest.getType() + " gas! please try another station!");
+              		} catch (GasTooExpensiveException e) {
+              			System.out.println(gasRequest.getType() +  " gas is too expensive! please try another station! ");
+              		} 
+    	    	  }
+    	    	  
+    	    	  
+			}
+    	      
+    	   }
+    	   
+    	   public GasType getType()
+    	   {
+    		   return this.type;
+    	   }
+    	   
     }
     
     
