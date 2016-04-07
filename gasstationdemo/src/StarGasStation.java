@@ -170,8 +170,10 @@ public class StarGasStation implements GasStation
     }
     
     public void startGasPumps(){
+    	//start a new thread for each gas pump. 
+    	//TODO: Solution for one pump per type at the same time is missing.
     	
-    	for (GasPump gasPump : gasPumpsList) {
+    	for (GasPump gasPump : getGasPumps()) {
     		GasType gasType = gasPump.getGasType();
     		PumpThread pumpThread = new PumpThread(stationName, gasType);
     		pumpThread.start();
@@ -187,28 +189,32 @@ public class StarGasStation implements GasStation
     	      super (name); 
     	      this.type = type;
     	   }
+    	
+    	
     	   public void run ()
     	   {
     		   
     	      System.out.println ("Gas Type: " + getType());
     	      
-    	      for (GasRequest gasRequest : gasRequestList) {
+    	      for (GasRequest gasRequest : getGasRequestList()) {
 				
     	    	  GasType gasRequestType = gasRequest.getType();
     	    	  if(gasRequestType == this.type)
     	    	  {
     	    		  try {
     	    			  System.out.println("Starting to pump " + gasRequest.getAmountInLiters() + "L of " + gasRequest.getType() + " at "+ stationName);
-						double amountGas = buyGas(gasRequest.getType(), gasRequest.getAmountInLiters(), gasRequest.getMaxPricePerLiter());
-						System.out.println(gasRequest.getType() + " request finished, bought "+ amountGas + "L at " + stationName);
+    	    			  
+    	    			  double amountGas = buyGas(gasRequest.getType(), gasRequest.getAmountInLiters(), gasRequest.getMaxPricePerLiter());
+						
+    	    			  System.out.println(gasRequest.getType() + " request finished, bought "+ amountGas + "L at " + stationName);
+						
     	    		  } catch (NotEnoughGasException e) {
               			System.out.println("Not enough " + gasRequest.getType() + " gas! please try another station!");
+              			
               		} catch (GasTooExpensiveException e) {
               			System.out.println(gasRequest.getType() +  " gas is too expensive! please try another station! ");
               		} 
     	    	  }
-    	    	  
-    	    	  
 			}
     	      
     	   }
