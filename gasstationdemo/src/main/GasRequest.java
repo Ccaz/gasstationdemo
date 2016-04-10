@@ -1,3 +1,4 @@
+package main;
 import net.bigpoint.assessment.gasstation.GasType;
 
 /**
@@ -41,6 +42,11 @@ public class GasRequest {
 
 	public double getMaxPricePerLiter() {
 		return maxPricePerLiter;
+	}
+	
+	
+	public GasRequest getGasRequest(){
+		return this;
 	}
 	
 	
